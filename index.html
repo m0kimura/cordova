@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<head>
+<meta  charset="utf-8" />
+<title>AcceloSensor</title>
+<meta name="server" content="http://aws.kmrweb.net:8081" />
+<meta name="screenWidth" content="450" />
+<script type="text/javascript" src="library/base.js"></script>
+<script type="text/sjs">
+var lib=require('library/library.sjs');
+var exe=require('library/screen.sjs');
+exe.open(function(info, rec, me){
+  lib.onSensor(function(){
+    exe.refresh({ptype: 'list', id: 'list0'});
+  });
+  me.recid='sensor'; exe.create("screen");
+});
+</script>
+</head>
+<body style="width: 450px; height: 800px;"></body>
+
+</html>

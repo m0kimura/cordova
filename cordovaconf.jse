@@ -1,0 +1,223 @@
+#!/usr/bin/env node
+var FS=require('fs');
+MAIN={CFG: {}, Source: {}, Master: {},
+  begin: function(){
+    var me=this;
+
+    if(me.prepair()){
+      var id=me.CFG.id;
+      me.config(id);
+      me.shell(id);
+    }
+  },
+//
+//
+//
+  prepair: function(){
+    var me=this;
+    var id, ix, out, fn, fd;
+
+    if(!process.argv[2]){console.log('アプリパラメータを指定してください'); return false;}
+    id=process.argv[2];
+
+    me.CFG.id=id;
+    me.CFG.log=process.argv[1].replace(/\.js/, '.log');
+    me.CFG.path=process.argv[1]; me.CFG.pid=process.pid; me.CFG.current=process.cwd();
+    me.CFG.apli=me.filepart(me.CFG.path);
+    fn=me.CFG.current+'/master.cfg'; me.Master=me.getJson(fn);
+    if(!me.Master){console.log("ファイルが見つかりませんfile="+fn); return false;}
+    
+    fn=me.CFG.current+'/'+id+'.cfg'; me.Source=me.getJson(fn);
+    if(!me.Source){console.log("ファイルが見つかりませんfile="+fn); return false;}
+
+    for(ix in me.Source){me.Master[ix]=me.Source[ix];}
+    return true;
+  },
+//
+// config.xmlを出力
+//
+  config: function(id){
+    var me=this;
+    var i, j, k, l, out, fn, fd;
+
+    out='<?xml version="1.0" encoding="utf-8"?>'+"\n";
+    out+='<widget id="'+me.Master.corp+'.'+id+'" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">'+"\n";
+    out+='  <name>'+me.Master.name+'</name>'+"\n";
+    
+    for(i in me.Master){
+      switch(i){
+        case "name": case "corp": case "email": break; 
+        case "description":
+         out+='  <description>'+me.Master.description+'</description>'+"\n";
+         break;
+        case "author":
+         out+='  <author email="'+me.Master.email+'" href="http://cordova.io">'+me.Master.author
+         +'</author>'+"\n";
+         break;
+        case "content":
+         out+='  <content src="'+me.Master.content+'" />'+"\n";
+         break;
+        case "preference":
+          for(j in me.Master.preference){for(k in me.Master.preference[j]){
+            out+='  <preference name="'+k+'" value="'+me.Master.preference[j][k]+'" />'+"\n";
+          }} break;
+        case "icon":
+          out+='  <icon ';
+          for(j in me.Master.icon){
+            out+=j+'="'+me.Master.icon[j]+'" ';
+          }
+          out+='/>'+"\n"; break;
+        case "access":
+          for(j in me.Master.access){
+            out+='  <access origin="'+me.Master.access[j]+'"/>'+"\n";
+          }
+          break;
+        case "allow-intent":
+          for(j in me.Master['allow-intent']){
+            out+='  <allow-intent href="'+me.Master['allow-intent'][j]+'"/>'+"\n";
+          }
+          break;
+        case "allow-navigation":
+          for(j in me.Master.access){
+            out+='  <allow-navigation href="'+me.Master['allow-navigation'][j]+'"/>'+"\n";
+          }
+          break;
+        case "android":
+          out+='  <platform name="android">'+"\n";
+          for(j in me.Master.android){for(k in me.Master.android[j]){
+            out+='    <'+k+' ';
+            for(l in me.Master.android[j][k]){
+              out+=l+'="'+me.Master.android[j][k][l]+'" ';
+            }
+            out+='/>'+"\n";
+          }}
+          out+='  </platform>'+"\n";
+          break;
+        default:
+          out+='  <'+i+' ';
+          for(j in me.Master[i]){
+            out+=j+'="'+me.Master[i][j]+'" ';
+          }
+          out+='/>'+"\n";
+      }
+    }
+    out+="</wdiget>\n";
+    
+    fn=me.CFG.current+'/config.xml';
+    fd=FS.openSync(fn, 'w'); FS.writeSync(fd, out); FS.closeSync(fd);
+  },
+//
+//　shellを出力
+//
+  shell: function(id){
+    var me=this;
+    var dt={}; dt.id=id; dt.pgid=me.Master.corp+'.'+id; dt.name=me.Master.name;
+    var main=[
+      "cordova create %{id} %{pgid} %{id}",
+      "cd %{id}",
+
+      "cordova platform add android",
+
+      "cordova plugin add cordova-plugin-whitelist",
+      "cordova plugin add cordova-plugin-splashscreen",
+      "cordova plugin add cordova-plugin-console"
+    ];
+//
+    var folder=[
+      "mkdir www/library",
+      "mkdir www/model",
+      "mkdir www/view",
+      "mkdir www/view/css",
+      "mkdir www/view/icon",
+      "mkdir www/view/img",
+      "mkdir www/view/screen",
+      "mkdir www/view/icon/android",
+      "mkdir www/view/screen/android"
+    ];
+//
+    copy=[
+      "cp ../tools/index.html www/index.html",
+      "cp ../tools/base.css www/view/css/base.css",
+      "cp ../tools/base.js  www/js/base.js",
+      "cp ../tools/execute.sjs www/library/execute.sjs",
+      "cp ../tools/jquery-2.1.1.js www/library/jquery-2.1.1.js",
+      "cp ../tools/library.sjs www/library/library.sjs",
+      "cp ../tools/screen.sjs www/library/screen.sjs",
+      "cp ../tools/stratified.js www/library/stratified.js",
+      "cp ../tools/white.jpg www/img/white.jpg",
+      "cp ../tools/splash.png www/splash.png"
+    ];
+//
+    var close=[
+      "../tools/apk_icongen.sh",
+      "cordova prepare -d"
+    ];
+//
+    var i, out, fn, fd, x;
+    out="#!/bin/sh \n";
+    for(i in main){x=me.parm(main[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
+    for(i in folder){x=me.parm(folder[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
+    for(i in copy){x=me.parm(copy[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
+    for(i in close){x=me.parm(close[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
+    out+="read -p '[ENTER]終了' y";
+
+    fn=me.CFG.current+'/config.sh';
+    fd=FS.openSync(fn, 'w'); FS.writeSync(fd, out); FS.closeSync(fd);
+  },
+//
+// filepart ファイル名部分を取り出し
+//          (ファイル名)==>拡張子
+  filepart: function(x){
+    var p=x.lastIndexOf('/'); if(p<0){return x;} p++; return x.substr(p);
+  },
+//
+// getjson JSON形式ファイルの読み込み
+//        (ファイル名)==>オブジェクト||false
+  getJson: function(fn){
+    try{
+      var rc=this.getFs(fn); if(rc){return JSON.parse(rc);}else{return false;}
+    }catch(e){this.error=e;}
+  },
+//
+// getFs ファイル読み込み
+//       (ファイル名)==>バッファ
+  getFs: function(fn){
+    this.error='';
+    if(this.isExist(fn)){var d=FS.readFileSync(fn).toString(); return d;}
+    else{this.error='file not found file='+fn; return false;}
+  },
+//
+// isExist ファイル存在確認
+//         (ファイル名)==> true|false
+  isExist: function(fn){
+    try{return FS.existsSync(fn);}catch(e){return false;}
+  },
+//
+// parm パラメータ展開
+//      (文字列, {パラメタ})   #{}<-INFOJ, %{}<-REC, ${}, ${}<-SCREEN &{}<- CFG
+  parm: function(ln, dt, i, j, c, sw, out, cc, key){ // develop parameter
+    var me=this; sw=0; out=''; key='';
+    if(!ln){return '';}
+    for(i=0; i<ln.length; i++){
+      c=ln.substr(i, 1); cc=ln.substr(i, 2);
+      switch(sw){
+       case 0:
+        switch(cc){
+          case '%{': sw=1; i++; key=''; break;
+          default: out+=c; break;
+        } break;
+       case 1:
+        if(c=='}'){
+          if(dt[key]!==undefined){out+=dt[key];}
+          sw=0;
+        }else{
+          key+=c;
+        } break;
+      }
+    }
+    return out;
+  },
+//
+  finish: function(){}
+};
+MAIN.begin();

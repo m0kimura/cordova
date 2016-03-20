@@ -1,0 +1,191 @@
+#!/usr/bin/env node
+var fs=require('fs'), fd;
+var exe={
+  open: function(argv, op){
+    var me=this, id=argv[2];
+    op=op||{};
+    op=me.getJson("www/config.json");
+    if(!op){console.log(this.error); return;}
+    for(var i in op){console.log(i+": "+op[i]);}
+//
+    op.id=id;
+    op.name=op.name||"ProgramName"; op.description=op.description||"Program Description";
+    op.author=op.author||"Michihiro Kimura";
+    op.corp=op.corp||"net.kmrweb"; op.email=op.email||"kimura@kmrweb.net";
+    op.first=op.first||"index.html";
+    me.config(op, id); me.first(op, id); me.copy(op, id);
+  },
+//
+  config: function(op, id){
+    var me=this, out='';
+    fd=fs.openSync("config.xml", "w");
+
+    fs.writeSync(fd, "<?xml version='1.0' encoding='utf-8'?>\n");
+    out+="\n"+me.tag('name', {}, op.name, 2);
+    out+=me.tag('description', {}, op.description, 2);
+    out+=me.tag('author', {email: op.email, href: "http://cordova.io"}, op.author+" At "+op.corp, 2);
+    out+="\n";
+    out+=me.tag('content', {src: op.first}, '/', 2);
+    out+="\n";
+    out+=me.preference(op);
+    out+="\n";
+    out+=me.tag("icon", {src: op.icon||"view/icon.png", width: "128", height: "128"}, "/", 2);
+    out+=me.tag("access", {origin: "*"}, "/", 2);
+    out+="\n";
+    out+=me.allow(op);
+    out+=me.tag("allow-navigation", {href: "*"}, "/", 2);
+    out+="\n";
+    out+=me.tag("platform", {name: "android"}, "\n"+me.android(op), 2);
+    out+="\n";
+    out+=me.tag("platform", {name: "ios"}, "", 2);
+    out+="\n";
+    out+=me.tag("engine", {name: "android", spec: "^4.0.0"}, "/", 2);
+    fs.writeSync(fd, me.tag("widget", {
+      "id": op.corp+"."+op.id, "version": "0.0.1", "xmlns": "http://www.w3.org/ns/widgets",
+      "xmlns:cdv": "http://cordova.apache.org/ns/1.0"
+    }, out, 0));
+    fs.closeSync(fd);
+  },
+//
+  first: function(op, id){
+    var me=this, out='', x='', y='', c, z;
+    op=op||{}; op.width=op.width||360; op.script=op.script||[]; op.style=op.style||[];
+    op.use=op.use||[];
+  //
+    fd=fs.openSync("www/"+op.first, "w");
+  //
+    fs.writeSync(fd, "<!DOCTYPE html>\n");
+    y="\n"+me.tag('meta ', {charset: "utf-8"}, "/");
+    y+=me.tag('title', {}, op.name);
+    if(op.script){
+      z=''; c=''; for(var i in op.script){z+=c+op.script[i]; c=',';}
+      y+=me.tag('meta', {name: "script", content: z}, "/");
+    }
+    if(op.style){
+      z=''; c=''; for(var i in op.style){z+=c+op.style[i]; c=',';}
+      y+=me.tag('meta', {name: "style", content: z}, "/");
+    }
+    if(op.use){
+      z=''; c=''; for(var i in op.use){z+=c+op.use[i]; c=',';}
+      y+=me.tag('meta', {name: "use", content: z}, "/");
+    }
+    y+=me.tag('meta', {name: "server", content: "http://aws.kmrweb.net:8081"}, "/");
+    y+=me.tag('meta', {name: "screenWidth", content: op.width}, "/");
+    if(op.script){z=''; c=''; for(var i in op.script){z+=c+op.script[i]; c=',';}}
+    x="\nvar lib=require('library/library.sjs');\n";
+    x+="var exe=require('library/screen.sjs');\n";
+    x+="exe.open(function(info, rec, me){\n";
+    x+="\n";
+    x+="});\n";
+    y+=me.tag('script', {type: "text/sjs"}, x);
+    out+=me.tag('head', {}, y);
+    out+=me.tag('body', {style: "width: "+op.width+";"}, "");
+    fs.writeSync(fd, "</html>");
+  //
+    fs.closeSync(fd);
+  },
+//
+  preference: function(op){
+    var me=this, out='';
+    out+=me.tag('preference', {name: "permissions", value: op.permissions||"none"}, "/", 2);
+    out+=me.tag('preference', {name: "orientation", value: op.orientation||"vertical"}, "/", 2);
+    out+=me.tag('preference', {name: "fullscreen", value: op.fullscreen||false}, "/", 2);
+    out+=me.tag('preference', {name: "webviewbounce", value: op.bounce||true}, "/", 2);
+    out+=me.tag('preference', {name: "disableOveerscroll", value: op.overscroll||"false"}, "/", 2);
+    out+=me.tag('preference', {name: "AutoHideSplashScreen", value: op.autohide||"true"}, "/", 2);
+    out+=me.tag('preference', {name: "android-minSdkVersion", value: op.minVersion||"10"}, "/", 2);
+    out+=me.tag('preference', {name: "android-installLocation", value: op.install||"auto"}, "/", 2);
+    out+=me.tag('preference', {name: "android-windowSoftInputMode", value: op.input||"stateHidden|adjustPan"}, "/", 2);
+    return out;
+  },
+//
+  allow: function(op){
+    var me=this, i, out='';
+    var d=["http://*/*", "https://*/*", "tel:*", "sms:*", "mailto:*", "geo:*"];
+    for(i in d){
+      out+=me.tag("allow-intent", {href: d[i]}, "/", 2);
+    }
+    return out;
+  },
+//
+  android: function(op){
+    var me=this, i, d, out=''; op=op||{};
+    op.iconPath=op.iconPath||"www/view/icon/"; op.splashPath=op.splashPath||"www/view/screen/";
+    me.tag("allow-intent", {href: "market:*"}, "", 4);
+    d={"ldpi": 36, "mdpi": 48, "hdpi": 72, "xhdpi": 96};
+    for(i in d){
+      out+=me.tag('icon', {density: i, src: op.iconPath+"android/icon"+d[i]+".png"}, "/", 4);
+    }
+    d={"port-ldpi": "320p", "port-mdpi": "480p", "port-hdpi": "800p", "port-xhdpi": "1280p",
+       "land-ldpi": "320l", "land-mdpi": "480l", "land-hdpi": "800l", "land-xhdpi": "1280l"};
+    for(i in d){
+      out+=me.tag('splash', {density: i, src: op.splashPath+"android/screen"+d[i]+".png"}, "/", 4);
+    }
+    return out;
+  },
+//
+  copy: function(op, id){
+    op=op||{}; op.use=op.use||[];
+    var me=this, data=op.use;
+////
+    var Main=function(op){
+      for(var i in data){
+        switch(data[i]){
+          case "loading": Loading(); break;
+          case "colors": Link("../library/", "www/library/", "color.sjs"); break;
+          case "fontA": Link("../../repository/", "www/library/", "dont-awesome.js"); break;
+          case "camera": Link("../library/", "www/library/", "camera.sjs"); break;
+          case "file": Link("../library/", "www/library/", "file.sjs"); break;
+          case "hotpepper": Link("../library/", "www/library/", "hotpepper.sjs"); break;
+          case "intent": Link("../library/", "www/library/", "intent.sjs"); break;
+          case "gmap": Link("../library/", "www/library/", "map.sjs"); break;
+          case "pedometer": Link("../library/", "www/library/", "pedometer.sjs"); break;
+          case "weather": Link("../library/", "www/library/", "weather.sjs"); break;
+          case "yahoo": Link("../library/", "www/library/", "yahoo.sjs"); break;
+          case "socket": Link("../../repository/", "www/library/", "socket.io-1.3.5.js"); break;
+          case "oauth": Link("../../repository/", "www/library/", "cordova.oauth2.js"); break;
+        }
+      }
+    }
+////
+    var Loading=function(){
+      Link("../library/", "www/library/", "loading2.svg");
+      Link("../library/", "www/library/", "loading3.svg");
+      Link("../library/", "www/library/", "loading4.svg");
+      Link("../library/", "www/library/", "loading5.svg");
+      Link("../library/", "www/library/", "loading6.svg");
+    };
+////
+    var Link=function(fp, tp, fn){
+      fs.createReadStream(fp+fn+'.link').pipe(fs.createWriteStream(tp+fn));
+    };
+////
+    Main(op);
+  },
+//
+  tag: function(name, attr, html, indent){
+    name=name||"div"; attr=attr||{}; html=html||""; indent=indent||0;
+    var out='', i; for(i=0; i<indent; i++){out+=' ';}
+    out+='<'+name;
+    for(i in attr){out+=' '+i+'="'+attr[i]+'"';}
+    if(html=='/'){out+=' />\n';}else{out+='>'+html+'</'+name+'>\n';}
+    return out;
+  },
+//
+  getJson: function(fn){
+    try{
+      var rc=this.getFs(fn); if(rc){return JSON.parse(rc);}else{return false;}
+    }catch(e){this.error=e;}
+  },
+  getFs: function(fn){
+    this.error='';
+    if(this.isExist(fn)){var d=fs.readFileSync(fn).toString(); return d;}
+    else{this.error='file not found file='+fn; return false;}
+  },
+  isExist: function(fn){
+    try{return fs.existsSync(fn);}catch(e){return false;}
+  },
+//
+  close: {}
+}
+exe.open(process.argv);
