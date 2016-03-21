@@ -4,7 +4,7 @@ MAIN={CFG: {}, Source: {}, Master: {},
   begin: function(){
     var me=this;
 
-    if(me.prepair()){
+    if(me.prepare()){
       var id=me.CFG.id;
       me.config(id);
       me.shell(id);
@@ -13,7 +13,7 @@ MAIN={CFG: {}, Source: {}, Master: {},
 //
 //
 //
-  prepair: function(){
+  prepare: function(){
     var me=this;
     var id, ix, out, fn, fd;
 
@@ -113,6 +113,7 @@ MAIN={CFG: {}, Source: {}, Master: {},
     var me=this;
     var dt={}; dt.id=id; dt.pgid=me.Master.corp+'.'+id; dt.name=me.Master.name;
     var main=[
+      "cd project",
       "cordova create %{id} %{pgid} %{id}",
       "cd %{id}",
 
@@ -136,20 +137,20 @@ MAIN={CFG: {}, Source: {}, Master: {},
     ];
 //
     copy=[
-      "cp ../tools/index.html www/index.html",
-      "cp ../tools/base.css www/view/css/base.css",
-      "cp ../tools/base.js  www/js/base.js",
-      "cp ../tools/execute.sjs www/library/execute.sjs",
-      "cp ../tools/jquery-2.1.1.js www/library/jquery-2.1.1.js",
-      "cp ../tools/library.sjs www/library/library.sjs",
-      "cp ../tools/screen.sjs www/library/screen.sjs",
-      "cp ../tools/stratified.js www/library/stratified.js",
-      "cp ../tools/white.jpg www/img/white.jpg",
-      "cp ../tools/splash.png www/splash.png"
+      "cp ../../tools/index.html www/index.html",
+      "cp ../../tools/base.css www/view/css/base.css",
+      "cp ../../tools/base.js  www/js/base.js",
+      "cp ../../tools/execute.sjs www/library/execute.sjs",
+      "cp ../../tools/jquery-2.1.1.js www/library/jquery-2.1.1.js",
+      "cp ../../tools/library.sjs www/library/library.sjs",
+      "cp ../../tools/screen.sjs www/library/screen.sjs",
+      "cp ../../tools/stratified.js www/library/stratified.js",
+      "cp ../../tools/white.jpg www/img/white.jpg",
+      "cp ../../tools/splash.png www/splash.png"
     ];
 //
     var close=[
-      "../tools/apk_icongen.sh",
+      "../../tools/apk_icongen.sh",
       "cordova prepare -d"
     ];
 //
