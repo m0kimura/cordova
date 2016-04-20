@@ -258,7 +258,7 @@ exe.extend({
 // baloon           バルーンボタン
 //
   baloon: function(op){
-    var me=this; op=op||{}; op.id=op.id||'x-baloon';
+    var me=this; op=op||{}; op.id=op.id||'x-baloon'; op.page=op.page||true; op.np=op.np||false;
     op.color=op.color||"white"; op.rsize=op.rsize||me.Manner.fontM; op.margin=op.margin||op.rsize;
     op.iconSize=op.iconSize||op.rsize; op.parent=op.parent||'body';
     var hi=op.rsize*2+op.margin*2, lf=me.pageX-(op.rsize*2+op.margin*2);

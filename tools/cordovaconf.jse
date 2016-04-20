@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 var FS=require('fs');
-MAIN={CFG: {}, Source: {}, Master: {},
+MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
   begin: function(){
     var me=this;
 
@@ -93,6 +93,8 @@ MAIN={CFG: {}, Source: {}, Master: {},
           }}
           out+='  </platform>'+"\n";
           break;
+        case "plugins": me.Plugins=me.Master.plugins; break;
+        case "libraries": me.Libraries=me.Master.libraries; break;
         default:
           out+='  <'+i+' ';
           for(j in me.Master[i]){
@@ -138,16 +140,20 @@ MAIN={CFG: {}, Source: {}, Master: {},
     ];
 //
     copy=[
+      "cp ../../repository/cordova.js www/library/cordova.js",
+      "cp ../../repository/fontawesome-webfomt.ttf www/library/fontawesome-webfomt.ttf",
+      "cp ../../repository/jquery-2.1.1.js www/library/jquery-2.1.1.js",
+      "cp ../../repository/stratified.js www/library/stratified.js",
+      "cp ../../library/base.css www/library/base.css",
+      "cp ../../library/white.jpg www/img/white.jpg",
+      "cp ../../library/base.js www/library/base.js",
+      "cp ../../library/colors.js www/library/colors.js",
+      "cp ../../library/execute.sjs www/library/execute.sjs",
+      "cp ../../library/font-awesome.js www/library/font-awesome.js",
+      "cp ../../library/library.sjs www/library/library.sjs",
+      "cp ../../library/screen.sjs www/library/screen.sjs",
       "cp ../../tools/index.html www/index.html",
-      "cp ../../tools/base.css www/view/css/base.css",
-      "cp ../../tools/white.jpg www/img/white.jpg",
-      "cp ../../tools/splash.png www/splash.png",
-      "cp ../../tools/base.js  www/library/base.js",
-      "cp ../../tools/execute.sjs www/library/execute.sjs",
-      "cp ../../tools/jquery-2.1.1.js www/library/jquery-2.1.1.js",
-      "cp ../../tools/library.sjs www/library/library.sjs",
-      "cp ../../tools/screen.sjs www/library/screen.sjs",
-      "cp ../../tools/stratified.js www/library/stratified.js",
+      "cp ../../tools/splash.png www/splash.png"
     ];
 //
     var close=[
@@ -161,6 +167,13 @@ MAIN={CFG: {}, Source: {}, Master: {},
     for(i in folder){x=me.parm(folder[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
     for(i in copy){x=me.parm(copy[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
     for(i in close){x=me.parm(close[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
+    for(i in me.Plugins){
+      x="cordova plugin add "+me.Plugins[i]; out+="echo 'Option>>"+x+"'\n"; out+=x+"\n";
+    }
+    for(i in me.Libraries){
+      x="cp ../../library/"+me.Libraries[i]+' '+'www/library/'+me.Libraries[i];
+      out+="echo 'Option>>"+x+"'\n"; out+=x+"\n";
+    }
     out+="read -p '[ENTER]終了' y";
 
     fn=me.CFG.current+'/config.sh';
