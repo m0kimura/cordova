@@ -113,15 +113,16 @@ MAIN={CFG: {}, Source: {}, Master: {},
     var me=this;
     var dt={}; dt.id=id; dt.pgid=me.Master.corp+'.'+id; dt.name=me.Master.name;
     var main=[
+      "mkdir project",
       "cd project",
       "cordova create %{id} %{pgid} %{id}",
       "cd %{id}",
 
       "cordova platform add android",
 
-      "cordova plugin add cordova-plugin-whitelist",
       "cordova plugin add cordova-plugin-splashscreen",
-      "cordova plugin add cordova-plugin-console"
+      "cordova plugin add cordova-plugin-console",
+      "cordova plugin add cordova-plugin-device"
     ];
 //
     var folder=[
@@ -139,14 +140,14 @@ MAIN={CFG: {}, Source: {}, Master: {},
     copy=[
       "cp ../../tools/index.html www/index.html",
       "cp ../../tools/base.css www/view/css/base.css",
-      "cp ../../tools/base.js  www/js/base.js",
-      "cp ../../tools/execute.sjs www/library/execute.sjs",
-      "cp ../../tools/jquery-2.1.1.js www/library/jquery-2.1.1.js",
-      "cp ../../tools/library.sjs www/library/library.sjs",
-      "cp ../../tools/screen.sjs www/library/screen.sjs",
-      "cp ../../tools/stratified.js www/library/stratified.js",
       "cp ../../tools/white.jpg www/img/white.jpg",
-      "cp ../../tools/splash.png www/splash.png"
+      "cp ../../tools/splash.png www/splash.png",
+      "cp ../../library/base.js  www/library/base.js",
+      "cp ../../library/execute.sjs www/library/execute.sjs",
+      "cp ../../library/jquery-2.1.1.js www/library/jquery-2.1.1.js",
+      "cp ../../library/library.sjs www/library/library.sjs",
+      "cp ../../library/screen.sjs www/library/screen.sjs",
+      "cp ../../library/stratified.js www/library/stratified.js",
     ];
 //
     var close=[
