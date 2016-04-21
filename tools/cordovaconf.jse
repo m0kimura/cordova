@@ -103,7 +103,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
           out+='/>'+"\n";
       }
     }
-    out+="</wdiget>\n";
+    out+="</widget>\n";
     
     fn=me.CFG.current+'/project/'+id+'/config.xml';
     fd=FS.openSync(fn, 'w'); FS.writeSync(fd, out); FS.closeSync(fd);
