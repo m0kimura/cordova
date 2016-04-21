@@ -105,7 +105,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
     }
     out+="</wdiget>\n";
     
-    fn=me.CFG.current+'/config.xml';
+    fn=me.CFG.current+'/'+id+'/config.xml';
     fd=FS.openSync(fn, 'w'); FS.writeSync(fd, out); FS.closeSync(fd);
   },
 //
