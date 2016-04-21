@@ -39,6 +39,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
   config: function(id){
     var me=this;
     var i, j, k, l, out, fn, fd;
+    console.log("##config.xml start output");
 
     out='<?xml version="1.0" encoding="utf-8"?>'+"\n";
     out+='<widget id="'+me.Master.corp+'.'+id+'" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">'+"\n";
@@ -105,7 +106,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
     }
     out+="</widget>\n";
     
-    fn=me.CFG.current+'/project/'+id+'/config.xml';
+    fn=me.CFG.current+'/config.xml';
     fd=FS.openSync(fn, 'w'); FS.writeSync(fd, out); FS.closeSync(fd);
   },
 //
@@ -140,6 +141,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
     ];
 //
     copy=[
+      "cp ../../config.xml config.xml",
       "cp ../../repository/cordova.js www/library/cordova.js",
       "cp ../../repository/fontawesome-webfont.ttf www/library/fontawesome-webfont.ttf",
       "cp ../../repository/jquery-2.1.1.js www/library/jquery-2.1.1.js",

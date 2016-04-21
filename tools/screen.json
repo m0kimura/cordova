@@ -1,0 +1,6 @@
+{"items": [
+  {"ptype": "header", "title": "Hallo World", "icons": [
+    {"id": "menu", "name": "bars"}, {"name": "title"}, {"name": "glass"}
+  ]},
+  {"ptype": "list", "html": "%{key}:%{value}"}
+]}

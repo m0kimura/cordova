@@ -934,7 +934,6 @@ exe.extend({
       start.x=event.changedTouches[0].pageX;
       start.y=event.changedTouches[0].pageY;
       var t=new Date(); start.t=t.getTime();
-//console.log('start', start, data);
     };
 //Move
     var Move=function(op){
@@ -962,7 +961,6 @@ exe.extend({
           break;
         default: break;
       }
-//console.log('move', now, data);
     };
 //End
     var End=function(){
@@ -1014,7 +1012,6 @@ exe.extend({
         break;
        default: break;
       }
-//console.log('end', data);
     };
 //Exec
     Main(op);
@@ -1051,7 +1048,6 @@ exe.extend({
       if(out.Height){now.sy=pic(out.Height);}else{now.sy=0;}
       if(out.Width){now.sx=pic(out.Width);}else{now.sx=0;}
     }
-//console.log('locate', op.parent, now);
     me.Grid[op.parent]=now;
     return out; 
   },
@@ -1494,6 +1490,7 @@ exe.extend({
   },
 //
   icx: function(name){
+    if(!DATA.Fa){console.log("font-awesome library not assigned");}
     if(DATA.Fa[name]==undefined){return '&#xf059';}
     return '&#x'+DATA.Fa[name];
   },

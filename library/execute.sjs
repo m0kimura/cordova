@@ -125,7 +125,6 @@ module.exports={
        case 4:
         if(c=='}'){
           po=me.getFrame(key, {mode: 'local', folder: 'view'});
-console.log('po', po);
           if(po.BODY!=undefined){out+=po.BODY;}
           if(po.EFFECT!=undefined){me.Effect[key]=po.EFFECT;}
           sw=0;

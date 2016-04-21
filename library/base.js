@@ -34,14 +34,14 @@ var DATA={
   };
 //
   var op=option(meta);
-//  if(op.style.self==undefined){op.style.self=true;}
-//  if(op.style.inline==undefined){op.style.inline=true;}
-//  if(op.script.self==undefined){op.script.self=true;}
-//  if(op.script.inline==undefined){op.script.inline=true;}
-//  if(op.use.colors==undefined){op.colors=true;}
-//  if(op.use.fontA==undefined){op.fontA=true;}
-//  if(op.use.fontG==undefined){op.fontG=false;}
-//  if(op.use.gmap==undefined){op.gmap=false;}
+  if(op.style.self==undefined){op.style.self=true;}
+  if(op.style.inline==undefined){op.style.inline=true;}
+  if(op.script.self==undefined){op.script.self=true;}
+  if(op.script.inline==undefined){op.script.inline=true;}
+  if(op.use.colors==undefined){op.use.colors=true;}
+  if(op.use.fontA==undefined){op.use.fontA=true;}
+  if(op.use.fontG==undefined){op.use.fontG=false;}
+  if(op.use.gmap==undefined){op.gmap=false;}
 //
   var always=true;
   if(op.style.self){order.meta.push({type: "style", data: " 'self'"});}
