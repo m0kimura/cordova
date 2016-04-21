@@ -126,6 +126,13 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
       "cordova plugin add cordova-plugin-splashscreen",
       "cordova plugin add cordova-plugin-console",
       "cordova plugin add cordova-plugin-device"
+
+//      "cp -r ../../repository/plugins/cordova-plugin-console plugins/cordova-plugin-console",
+//      "cp -r ../../repository/plugins/cordova-plugin-device plugins/cordova-plugin-device",
+//      "cp -r ../../repository/plugins/cordova-plugin-splashscreen plugins/cordova-plugin-splashscreen",
+//      "cp -r ../../repository/plugins/cordova-plugin-console plugins/whitelist",
+//      "cp -r ../../repository/plugins/android.json plugins/android.json",
+//      "cp -r ../../repository/plugins/android.json plugins/fetch.json"
     ];
 //
     var folder=[
@@ -155,6 +162,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
       "cp ../../library/library.sjs www/library/library.sjs",
       "cp ../../library/screen.sjs www/library/screen.sjs",
       "cp ../../tools/index.html www/index.html",
+      "cp ../../tools/screen.json www/view/screen.json",
       "cp ../../tools/splash.png www/splash.png"
     ];
 //
