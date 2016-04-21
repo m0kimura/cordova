@@ -141,7 +141,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
 //
     copy=[
       "cp ../../repository/cordova.js www/library/cordova.js",
-      "cp ../../repository/fontawesome-webfomt.ttf www/library/fontawesome-webfomt.ttf",
+      "cp ../../repository/fontawesome-webfont.ttf www/library/fontawesome-webfont.ttf",
       "cp ../../repository/jquery-2.1.1.js www/library/jquery-2.1.1.js",
       "cp ../../repository/stratified.js www/library/stratified.js",
       "cp ../../library/base.css www/library/base.css",
