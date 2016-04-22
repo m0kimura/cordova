@@ -1,4 +1,4 @@
-module.exports={Senario: [],
+module.exports={Scenario: [], Syn: {},
 // cordova plugin add cordova-plugin-whitelist
 // cordova plugin add cordova-plugin-device
 // cordova plugin add cordova-plugin-splashscreen
@@ -137,51 +137,47 @@ module.exports={Senario: [],
 //
 // TTS
 // cordova plugin add io.cordova.plugins.TTS
-  ttsready: function(){
-    var me=this; proc=proc||function(){}; var rc;
-    waitfor(){window.plugins.tts.startup(
-      function(){rc=true; resume();},
-      function(err){rc=false; me.error=err.code; resume();}
-    );}
-    return rc;
-  },
-//
-  ttslanguage: function(lang){
-    var me=this; var rc; lang=lang||"ja-JP";
-    waitfor(){window.plugins.tts.setLanguage(lang,
-      function(){rc=true; resume();},
-      function(err){rc=false; me.error=err.code; resume();}
-    );}
-    return rc;
-  },
-//
-  ttsspeak: function(op){
+  ttsBegin: function(op){
     var me=this;
-    if(!op){
-      if(me.Scenario.length>0){op=me.Scenario[0]; me.Scenario.shift();}
-      else{op={txt: '次の操作に移ってください。'};}
-    }
-    waitfor(){window.plugins.tts.speak(op.txt, 
-      function(){rc=true; resume();},
-      function(err){rc=false; rc.error=err; resume();}
-    );}
-    return rc;
+    op=op||{}; op.locale=op.locale||"ja-JP"; op.rate=op.rate||1; op.txt=op.txt||'';
+    me.Syn.locale=op.locale; me.Syn.rate=op.rate; me.Syn.text=op.txt;
+    me.Msg=op.message||{};
   },
 //
-  ttsadd: function(txt, ix, a, b, c, d){
-    var me=this; ix=ix||0; var d=me.ttsedit(txt, ix, a, b, c, d);
-    me.Scenario.push({txt: d});
+  talk: function(txt){
+    var me=this;
+    var argv=me.talk.arguments; txt=me.ttsedit(txt, me.talk.arguments);
+    if(me.Scenario.length==0){me.Scenario.push(txt); me.speak();}else{me.Scenario.push(txt);}
   },
-  ttspre: function(txt, ix, a, b, c, d){
-    var me=this; ix=ix||0;
-    me.Scenario.unshift({txt: me.ttsedit(txt, ix, a, b, c, d)});
+//
+  talkFix: function(key){
+    var me=this;
+    var argv=me.talkFix.arguments; var txt=me.ttsedit(me.Msg[key], me.talkFix.arguments);
+    if(me.Scenario.length==0){me.Scenario.push(txt); me.speak();}else{me.Scenario.push(txt);}
   },
-  ttsedit: function(txt, ix, a, b, c, d){
-    var me=this; ix=ix||0;
-    var out='', j; var argv=me.ttsedit.arguments;
+//
+  talkHash: function(){
+    var me=this;
+    var txt=ocation.hash.substr(1);
+    if(me.Scenario.length==0){me.Scenario.push(txt); me.speak();}else{me.Scenario.push(txt);}
+  },
+//
+  speak: function(){
+    var me=this;
+    while(me.Scenario.length>0){
+      waitfor(){
+        me.Syn.text=me.Scenario[0];
+        TTS.speak(me.Syn, function(){resume();}, function(e){alert(reason); resume();});
+      }
+      me.Scenario.shift();
+    }
+  },
+//
+  ttsedit: function(txt, argv){
+    var me=this; txt=txt||''; argv=argv||{};
+    var out='', i, j;
     for(i=0; i<txt.length; i++){
-      if(txt[i]=='$'){i++; j=txt[i]-0; out+=argv[j+1];}
-      else{out+=txt[i];}
+      if(txt[i]=='$'){i++; j=txt[i]-0; out+=argv[j];}else{out+=txt[i];}
     }
     return out;
   },

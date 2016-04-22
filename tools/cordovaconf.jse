@@ -94,8 +94,13 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
           }}
           out+='  </platform>'+"\n";
           break;
-        case "plugins": me.Plugins=me.Master.plugins; break;
-        case "libraries": me.Libraries=me.Master.libraries; break;
+        case "use": me.component();
+        case "plugins":
+         for(i in me.Master.plugins){me.Plugins.push(me.Master.plugins[i]);}
+         break;
+        case "libraries":
+         for(i in me.Master.libraries){me.Libraries.push(me.Master.libraries[i]);}
+         break;
         default:
           out+='  <'+i+' ';
           for(j in me.Master[i]){
@@ -108,6 +113,18 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
     
     fn=me.CFG.current+'/config.xml';
     fd=FS.openSync(fn, 'w'); FS.writeSync(fd, out); FS.closeSync(fd);
+  },
+//
+//
+//
+  component: function(){
+    var me=this; var i;
+
+    for(i in me.Master.use){
+      switch(me.Master.use[i]){
+        case 'tts': me.Plugins.push('cordova-plugin-tts'); break;
+      }
+    }
   },
 //
 //　shellを出力
@@ -175,8 +192,6 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
     out="#!/bin/sh \n";
     for(i in main){x=me.parm(main[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
     for(i in folder){x=me.parm(folder[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
-    for(i in copy){x=me.parm(copy[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
-    for(i in close){x=me.parm(close[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
     for(i in me.Plugins){
       x="cordova plugin add "+me.Plugins[i]; out+="echo 'Option>>"+x+"'\n"; out+=x+"\n";
     }
@@ -184,6 +199,8 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
       x="cp ../../library/"+me.Libraries[i]+' '+'www/library/'+me.Libraries[i];
       out+="echo 'Option>>"+x+"'\n"; out+=x+"\n";
     }
+    for(i in copy){x=me.parm(copy[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
+    for(i in close){x=me.parm(close[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
     out+="read -p '[ENTER]終了' y";
 
     fn=me.CFG.current+'/config.sh';
