@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 var FS=require('fs');
-MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
+MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sjss: [], Scripts: [],
   begin: function(){
     var me=this;
 
     if(me.prepare()){
-      var id=me.CFG.id;
-      me.config(id);
-      me.shell(id);
+      var id=me.CFG.id; me.config(id); me.html(); me.shell(id);
     }
   },
 //
@@ -39,6 +37,12 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
   config: function(id){
     var me=this;
     var i, j, k, l, out, fn, fd;
+
+    me.Metas.push({name: "screenWidth", content: "450"});
+    me.Scripts.push("library/base.js");
+    me.Libraries.push({id: "lib", file: "library.sjs"});
+    me.Libraries.push({id: "exe", file: "screen.sjs"});
+
     console.log("##config.xml start output");
 
     out='<?xml version="1.0" encoding="utf-8"?>'+"\n";
@@ -99,7 +103,8 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
          for(i in me.Master.plugins){me.Plugins.push(me.Master.plugins[i]);}
          break;
         case "libraries":
-         for(i in me.Master.libraries){me.Libraries.push(me.Master.libraries[i]);}
+         for(i in me.Master.libraries)
+          {me.Libraries.push({id: "lb"+i, file: me.Master.libraries[i]});}
          break;
         default:
           out+='  <'+i+' ';
@@ -122,7 +127,11 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
 
     for(i in me.Master.use){
       switch(me.Master.use[i]){
-        case 'tts': me.Plugins.push('cordova-plugin-tts'); break;
+       case 'tts': me.Plugins.push('cordova-plugin-tts'); break;
+       case 'accelo':
+        me.Plugins.push('cordova-plugin-device-motion');
+        me.Plugins.push('cordova-plugin-device-orientation');
+        break;
       }
     }
   },
@@ -140,8 +149,8 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
 
       "cordova platform add android",
 
-      "cordova plugin add cordova-plugin-splashscreen",
-      "cordova plugin add cordova-plugin-console",
+//      "cordova plugin add cordova-plugin-splashscreen",
+//      "cordova plugin add cordova-plugin-console",
       "cordova plugin add cordova-plugin-device"
 
 //      "cp -r ../../repository/plugins/cordova-plugin-console plugins/cordova-plugin-console",
@@ -176,11 +185,9 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
       "cp ../../library/colors.js www/library/colors.js",
       "cp ../../library/execute.sjs www/library/execute.sjs",
       "cp ../../library/font-awesome.js www/library/font-awesome.js",
-      "cp ../../library/library.sjs www/library/library.sjs",
-      "cp ../../library/screen.sjs www/library/screen.sjs",
-      "cp ../../tools/index.html www/index.html",
       "cp ../../tools/screen.json www/view/screen.json",
-      "cp ../../tools/splash.png www/splash.png"
+      "cp ../../tools/splash.png www/splash.png",
+      "cp ../../index.html www/index.html"
     ];
 //
     var close=[
@@ -196,7 +203,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
       x="cordova plugin add "+me.Plugins[i]; out+="echo 'Option>>"+x+"'\n"; out+=x+"\n";
     }
     for(i in me.Libraries){
-      x="cp ../../library/"+me.Libraries[i]+' '+'www/library/'+me.Libraries[i];
+      x="cp ../../library/"+me.Libraries[i].file+' '+'www/library/'+me.Libraries[i].file;
       out+="echo 'Option>>"+x+"'\n"; out+=x+"\n";
     }
     for(i in copy){x=me.parm(copy[i], dt); out+="echo '>>"+x+"'\n"; out+=x+"\n";}
@@ -204,6 +211,47 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [],
     out+="read -p '[ENTER]終了' y";
 
     fn=me.CFG.current+'/config.sh';
+    fd=FS.openSync(fn, 'w'); FS.writeSync(fd, out); FS.closeSync(fd);
+  },
+//
+//
+//
+  html: function(){
+    var me=this; var out='', i;
+    var top=[
+      '<!DOCTYPE html>',
+      '<head>',
+      '<meta  charset="utf-8" />'
+    ];
+
+    var bot=[
+      'exe.open(function(info, rec, me){',
+      '  exe.create("screen");',
+      '  ',
+      '});',
+      '</script>',
+      '</head>',
+      '<body style="width: 450px; height: 800px;"></body>',
+      '</html>'
+    ];
+
+    for(i in top){out+=top[i]+"\n";}
+    out+='<title>'+me.Master.name+'</title>';
+
+
+    for(i in me.Metas)
+      {out+='<meta name="'+me.Metas[i].name+'" content="'+me.Metas[i].content+'" />\n';}
+
+    for(i in me.Scripts)
+      {out+='<script type="text/javascript" src="'+me.Scripts[i]+'"></script>\n';}
+
+    out+='<script type="text/sjs">\n';
+    for(i in me.Libraries)
+      {out+='var '+me.Libraries[i].id+'=require("library/'+me.Libraries[i].file+'");\n';}
+
+    for(i in bot){out+=bot[i]+"\n";}
+
+    fn=me.CFG.current+'/index.html';
     fd=FS.openSync(fn, 'w'); FS.writeSync(fd, out); FS.closeSync(fd);
   },
 //
