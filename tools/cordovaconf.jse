@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 var FS=require('fs');
 MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sjss: [], Scripts: [],
+  Lix: 0,
   begin: function(){
     var me=this;
 
@@ -103,8 +104,9 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
          for(i in me.Master.plugins){me.Plugins.push(me.Master.plugins[i]);}
          break;
         case "libraries":
-         for(i in me.Master.libraries)
-          {me.Libraries.push({id: "lb"+i, file: me.Master.libraries[i]});}
+         for(i in me.Master.libraries){
+           me.Lix++; me.Libraries.push({id: "lb"+me.Lix, file: me.Master.libraries[i]});
+         }
          break;
         default:
           out+='  <'+i+' ';
@@ -128,9 +130,17 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
     for(i in me.Master.use){
       switch(me.Master.use[i]){
        case 'tts': me.Plugins.push('cordova-plugin-tts'); break;
+       case 'barcode': me.Plugins.push('phonegap-plugin-barcodescanner'); break;
        case 'accelo':
         me.Plugins.push('cordova-plugin-device-motion');
         me.Plugins.push('cordova-plugin-device-orientation');
+        break;
+       case 'map':
+        me.Lix++;
+        me.Libraries.push({id: "lb"+me.Lix, file: 'map.sjs'});
+        me.Scripts.push(" http://maps.gstatic.com");
+        me.Scripts.push(" http://maps.googleapis.com");
+        me.Scripts.push(" http://mt0.googleapis.com");
         break;
       }
     }
@@ -148,17 +158,17 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
       "cd %{id}",
 
       "cordova platform add android",
+//      "cp -r ../../tools/plugins/cordova-plugin-console plugins/cordova-plugin-console",
+//      "cp -r ../../tools/plugins/cordova-plugin-device plugins/cordova-plugin-device",
+//      "cp -r ../../tools/plugins/cordova-plugin-splashscreen plugins/cordova-plugin-splashscreen",
+//      "cp -r ../../tools/plugins/cordova-plugin-whitelist plugins/cordova-plugin-whitelist",
+//      "cp ../../tools/plugins/android.json plugins/android.json",
+//      "cp ../../tools/plugins/fetch.json plugins/fetch.json"
 
 //      "cordova plugin add cordova-plugin-splashscreen",
 //      "cordova plugin add cordova-plugin-console",
       "cordova plugin add cordova-plugin-device"
 
-//      "cp -r ../../repository/plugins/cordova-plugin-console plugins/cordova-plugin-console",
-//      "cp -r ../../repository/plugins/cordova-plugin-device plugins/cordova-plugin-device",
-//      "cp -r ../../repository/plugins/cordova-plugin-splashscreen plugins/cordova-plugin-splashscreen",
-//      "cp -r ../../repository/plugins/cordova-plugin-console plugins/whitelist",
-//      "cp -r ../../repository/plugins/android.json plugins/android.json",
-//      "cp -r ../../repository/plugins/android.json plugins/fetch.json"
     ];
 //
     var folder=[
@@ -167,9 +177,9 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
       "mkdir www/view",
       "mkdir www/view/css",
       "mkdir www/view/icon",
+      "mkdir www/view/icon/android",
       "mkdir www/view/img",
       "mkdir www/view/screen",
-      "mkdir www/view/icon/android",
       "mkdir www/view/screen/android"
     ];
 //
@@ -236,7 +246,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
     ];
 
     for(i in top){out+=top[i]+"\n";}
-    out+='<title>'+me.Master.name+'</title>';
+    out+='<title>'+me.Master.name+'</title>\n';
 
 
     for(i in me.Metas)

@@ -46,9 +46,11 @@ var DATA={
   var always=true;
   if(op.style.self){order.meta.push({type: "style", data: " 'self'"});}
   if(op.style.inline){order.meta.push({type: "style", data: " 'unsafe-inline'"});}
+  order.meta.push({type: "style", data: " * "});
   if(always){order.meta.push({type: "script", data: " 'unsafe-eval'"});}
   if(op.script.self){order.meta.push({type: "script", data: " 'self'"});}
   if(op.script.inline){order.meta.push({type: "script", data: " 'unsafe-inline'"});}
+  order.meta.push({type: "script", data: " * "});
   if(always){order.css.push("library/base.css");}
   if(always){order.js.push("cordova.js");}
   if(always){order.js.push("library/jquery-2.1.1.js");}

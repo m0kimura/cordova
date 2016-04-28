@@ -29,8 +29,8 @@ module.exports={
       case "open": o.overviewMapControl=true; o.overviewMapControlOptions={opened: true}; break;
     }
 //streetView 
+    if(op.streetView){o.streetViewControl=true;}else{o.streetViewControl=false;}
     switch(op.streetView){
-      case "nouse": o.streetViewControl=false; break;
       case "rt": o.streetViewControlOptions={position: google.maps.ControlPosition.RIGHT_TOP}; break;
       case "rb": o.streetViewControlOptions={position: google.maps.ControlPosition.RIGHT_BOTTOM}; break;
       case "lt": o.streetViewControlOptions={position: google.maps.ControlPosition.LEFT_TOP}; break;
@@ -53,7 +53,7 @@ module.exports={
       case "lb": o.rotateControlOptions={position: google.maps.ControlPosition.LEFT_BOTTOM}; break;
     }
 //scale, dblclick, wheel, drag
-    if(op.scale=="use"){o.scaleControl=true;}
+    if(op.scale=="nouse"){o.scaleControl=false;}else{o.scaleControl=true;}
     if(op.dblclick=="nouse"){o.disableDoubleClickZoom=true;}
     if(op.wheel=="nouse"){o.wheelControl=false;}
     if(op.drag=="nouse"){o.draggable=false;}
