@@ -39,7 +39,6 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
     var me=this;
     var i, j, k, l, out, fn, fd;
 
-    me.Metas.push({name: "screenWidth", content: "450"});
     me.Scripts.push("library/base.js");
     me.Libraries.push({id: "lib", file: "library.sjs"});
     me.Libraries.push({id: "exe", file: "screen.sjs"});
@@ -99,7 +98,11 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
           }}
           out+='  </platform>'+"\n";
           break;
-        case "use": me.component();
+        case "use": me.component(); break;
+        case "screen":
+         me.CFG.width=me.Master.screen.width;
+         me.CFG.height=me.Master.screen.height||Math.floor(me.CFG.width*12/9);
+         break;
         case "plugins":
          for(i in me.Master.plugins){me.Plugins.push(me.Master.plugins[i]);}
          break;
@@ -117,9 +120,12 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
       }
     }
     out+="</widget>\n";
+
+    me.Metas.push({name: "screenWidth", content: me.CFG.width});
     
     fn=me.CFG.current+'/config.xml';
     fd=FS.openSync(fn, 'w'); FS.writeSync(fd, out); FS.closeSync(fd);
+
   },
 //
 //
@@ -130,6 +136,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
     for(i in me.Master.use){
       switch(me.Master.use[i]){
        case 'tts': me.Plugins.push('cordova-plugin-tts'); break;
+       case 'stt': me.Plugins.push('https://github.com/poiuytrez/SpeechRecognizer'); break;
        case 'barcode': me.Plugins.push('phonegap-plugin-barcodescanner'); break;
        case 'accelo':
         me.Plugins.push('cordova-plugin-device-motion');
@@ -240,9 +247,7 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
       '  ',
       '});',
       '</script>',
-      '</head>',
-      '<body style="width: 450px; height: 800px;"></body>',
-      '</html>'
+      '</head>'
     ];
 
     for(i in top){out+=top[i]+"\n";}
@@ -260,6 +265,8 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
       {out+='var '+me.Libraries[i].id+'=require("library/'+me.Libraries[i].file+'");\n';}
 
     for(i in bot){out+=bot[i]+"\n";}
+    out+='<body style="width: '+me.CFG.width+'px; height: '+me.CFG.height+'px;"></body>\n';
+    out+='</html>';
 
     fn=me.CFG.current+'/index.html';
     fd=FS.openSync(fn, 'w'); FS.writeSync(fd, out); FS.closeSync(fd);

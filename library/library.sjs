@@ -182,6 +182,32 @@ module.exports={Scenario: [], Syn: {},
     return out;
   },
 //
+// STT
+// cordova plugin add cordova-plugin-speechrecognizer
+  recognize: function(op){
+    var me=this; op=op||{}; op.maches=op.matches||5; op.language=op.language||'ja-JP';
+    op.prompt=op.prompt||'お話しください。';
+    var out; waitfor(){
+      window.plugins.speechrecognizer.startRecognize(
+        function(res){out=res; resume();},
+        function(e){this.error=e; out=false; resume();},
+        op.maches, op.prompt, op.language
+      );
+    }
+    return out;
+  },
+//
+  recognizeCheck: function(){
+    var me=this;
+    var rc; waitfor(){
+      window.plugins.speechrecognizer.checkSpeechRecognition(
+        function(){rc='OK'; resume();},
+        function(){rc='NG'; resume();}
+      );
+    }
+    return rc;
+  },
+//
 // InappBrowser
 // cordova plugin add cordova-plugin-inappbrowser
   webshow: function(url, op){
