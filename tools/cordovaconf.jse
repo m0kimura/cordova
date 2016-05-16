@@ -138,6 +138,8 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
        case 'tts': me.Plugins.push('cordova-plugin-tts'); break;
        case 'stt': me.Plugins.push('https://github.com/poiuytrez/SpeechRecognizer'); break;
        case 'barcode': me.Plugins.push('phonegap-plugin-barcodescanner'); break;
+       case 'ble': me.Plugins.push('cordova-plugin-ble-centeral'); break;
+       case 'nfc': me.Plugins.push('phonegap-nfc'); break;
        case 'accelo':
         me.Plugins.push('cordova-plugin-device-motion');
         me.Plugins.push('cordova-plugin-device-orientation');

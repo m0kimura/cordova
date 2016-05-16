@@ -80,7 +80,7 @@ module.exports={Scenario: [], Syn: {},
   },
 //
 // BluetoothLowEnergy
-// cordova plugin add com.megster.cordova.ble
+// cordova plugin add cordova-plugin-ble-central
   onBle: function(proc, op){
     var me=this, rc; op=op||{}; op.list=op.list||[];
     op.period=op.period||5; op.interval=op.interval||300;
@@ -118,7 +118,7 @@ module.exports={Scenario: [], Syn: {},
   },
 //
 // NfcReader
-// cordova plugin add com.chariotsolutions.nfc.plugin
+// cordova plugin add phonegap-nfc
   nfcscan: function(){
     var me=this; var rc;
     waitfor(){nfc.addNdefListener(
