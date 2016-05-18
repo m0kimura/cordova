@@ -120,7 +120,9 @@ MAIN={CFG: {}, Source: {}, Master: {}, Plugins: [], Libraries: [], Metas: [], Sj
       }
     }
     out+="</widget>\n";
-
+    
+    me.CFG.width=me.CFG.width||360;
+    me.CFG.height=me.CFG.height||640;
     me.Metas.push({name: "screenWidth", content: me.CFG.width});
     
     fn=me.CFG.current+'/config.xml';
