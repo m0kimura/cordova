@@ -88,12 +88,12 @@ var exe={
   preference: function(op){
     var me=this, out='';
     out+=me.tag('preference', {name: "permissions", value: op.permissions||"none"}, "/", 2);
-    out+=me.tag('preference', {name: "orientation", value: op.orientation||"vertical"}, "/", 2);
+    out+=me.tag('preference', {name: "orientation", value: op.orientation||"sensorPortrait"}, "/", 2);
     out+=me.tag('preference', {name: "fullscreen", value: op.fullscreen||false}, "/", 2);
     out+=me.tag('preference', {name: "webviewbounce", value: op.bounce||true}, "/", 2);
     out+=me.tag('preference', {name: "disableOveerscroll", value: op.overscroll||"false"}, "/", 2);
     out+=me.tag('preference', {name: "AutoHideSplashScreen", value: op.autohide||"true"}, "/", 2);
-    out+=me.tag('preference', {name: "android-minSdkVersion", value: op.minVersion||"10"}, "/", 2);
+    out+=me.tag('preference', {name: "android-minSdkVersion", value: op.minVersion||"14"}, "/", 2);
     out+=me.tag('preference', {name: "android-installLocation", value: op.install||"auto"}, "/", 2);
     out+=me.tag('preference', {name: "android-windowSoftInputMode", value: op.input||"stateHidden|adjustPan"}, "/", 2);
     return out;
